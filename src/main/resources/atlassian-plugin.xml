@@ -1,0 +1,37 @@
+<atlassian-plugin key="${project.groupId}.${project.artifactId}" name="${project.name}" plugins-version="2">
+    <plugin-info>
+        <description>${project.description}</description>
+        <version>${project.version}</version>
+        <vendor name="${project.organization.name}" url="${project.organization.url}" />
+    </plugin-info>
+
+    <component-import key="userManager" interface="com.atlassian.sal.api.user.UserManager" />
+
+    <template-context-item key="webInterfaceManagerContextItem" context-key="webInterfaceManager"
+            component-ref="webInterfaceManager"/>
+
+    <servlet name="twdata-proxy" class="org.twdata.proxy.ExampleServlet" key="test">
+        <url-pattern>/test</url-pattern>
+    </servlet>
+
+    <servlet-filter name="decorator" class="org.twdata.proxy.DecoratorFilter" key="decorator"
+            location="before-dispatch">
+        <url-pattern>/plugins/servlet/reafppdecorator/*</url-pattern>
+    </servlet-filter>
+
+    <rest key="webui" path="/ui" version="1" package="org.twdata.proxy.ui">
+        <dispatcher>FORWARD</dispatcher>
+		<init-param>
+			<param-name>com.sun.jersey.config.feature.ImplicitViewables</param-name>
+			<param-value>true</param-value>
+		</init-param>
+
+    </rest>
+
+    <url-rewrite key="rewrite" location="before-dispatch">
+        <rule>
+        <from>^/index.html</from>
+        <to type="forward">/rest/ui/1/index</to>
+    </rule>
+    </url-rewrite>
+</atlassian-plugin>
